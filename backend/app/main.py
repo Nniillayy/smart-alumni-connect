@@ -10,9 +10,22 @@ from app.models.event import Event
 from app.models.donation import DonationCampaign, Donation
 from app.models.gamification import Badge, UserBadge
 from app.models.chat import Message # Ensure model is loaded
+import time
+from sqlalchemy.exc import OperationalError
 
-# Create tables
-Base.metadata.create_all(bind=engine)
+# Create tables with retry logic
+MAX_RETRIES = 10
+RETRY_DELAY = 2
+
+for i in range(MAX_RETRIES):
+    try:
+        Base.metadata.create_all(bind=engine)
+        break
+    except OperationalError as e:
+        if i == MAX_RETRIES - 1:
+            raise e
+        print(f"Database not ready, retrying in {RETRY_DELAY} seconds...")
+        time.sleep(RETRY_DELAY)
 
 app = FastAPI(title="Smart Alumni Connect API")
 

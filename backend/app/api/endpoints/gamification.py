@@ -1,7 +1,6 @@
 from typing import Any, List
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from sqlalchemy import dest
 from app import models, schemas
 from app.api import deps
 from app.db.session import get_db
